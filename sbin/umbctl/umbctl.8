@@ -1,0 +1,79 @@
+.\"	$NetBSD$
+.\"
+.\" Copyright (c) 2018 by Pierre Pronchery <khorben@defora.org>
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS
+.\" OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+.\" WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+.\" DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT,
+.\" INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+.\" (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+.\" SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+.\" STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+.\" IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.\"
+.\" From: pppoectl.8,v 1.30 2016/09/12 05:35:20 sevan Exp $
+.\"
+.\" $Id$
+.\"
+.\" last edit-date: [Thu Aug 31 10:47:33 2000]
+.\"
+.Dd May 5, 2018
+.Dt UMBCTL 8
+.Os
+.Sh NAME
+.Nm umbctl
+.Nd "display or set parameters for a umb (4G/LTE) interface"
+.Sh SYNOPSIS
+.Nm umbctl
+.Op Fl a Ar APN
+.Op Fl u Ar username
+.Op Fl p Ar password
+.Ar ifname
+.Sh DESCRIPTION
+.Bl -tag -width indent
+.It Fl a
+specifies the APN (Access Point Name) used to communicate with the
+network.
+.It Fl u
+specifies the username used to authenticate with the network.
+.It Fl p
+specifies the password used to authenticate with the network.
+.Sh EXAMPLES
+.Bd -literal
+# umbctl umb0
+umb0: PIN ****, roaming 0, classes 0
+.Ed
+.Pp
+Display the settings for umb0.
+.Ed
+.Bd -literal
+# umbctl -a operator.internet -u mobile -p mobile umb0
+.Ed
+.Pp
+Configure the connection parameters for umb0.
+.Ed
+.Sh SEE ALSO
+.Xr netstat 1 ,
+.Xr ifconfig 8 ,
+.Xr ifwatchd 8 ,
+.Xr umb 4
+.Sh HISTORY
+The
+.Nm
+utility first appeared in
+.Nx 9.0 .
+.Sh AUTHORS
+The program was written by Pierre Pronchery.
