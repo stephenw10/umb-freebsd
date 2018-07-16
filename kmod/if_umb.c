@@ -26,6 +26,9 @@
  * http://www.usb.org/developers/docs/devclass_docs/MBIM-Compliance-1.0.pdf
  */
 
+#ifdef USB_GLOBAL_INCLUDE_FILE
+#include USB_GLOBAL_INCLUDE_FILE
+#else
 #include <sys/cdefs.h>
 
 #ifdef _KERNEL_OPT
@@ -59,6 +62,7 @@
 #include <dev/usb/usbdi_util.h>
 #include <dev/usb/usbdevs.h>
 #include <dev/usb/usbcdc.h>
+#endif
 
 #include "mbim.h"
 #include "if_umbreg.h"
