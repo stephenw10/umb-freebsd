@@ -60,8 +60,8 @@
 #include <dev/usb/usbdevs.h>
 #include <dev/usb/usbcdc.h>
 
-#include <dev/usb/mbim.h>
-#include <dev/usb/if_umbreg.h>
+#include "mbim.h"
+#include "if_umbreg.h"
 
 #ifdef UMB_DEBUG
 #define DPRINTF(x...)							\
