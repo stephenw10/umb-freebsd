@@ -81,8 +81,8 @@
 		} while (0)
 
 int	 umb_debug = 0;
-Static char	*umb_uuid2str(uint8_t [MBIM_UUID_LEN]);
-Static void	 umb_dump(void *, int);
+static char	*umb_uuid2str(uint8_t [MBIM_UUID_LEN]);
+static void	 umb_dump(void *, int);
 
 #else
 #define DPRINTF(x...)		do { } while (0)
@@ -130,95 +130,95 @@ const struct umb_valdescr umb_istate[] = UMB_INTERNAL_STATE_DESCRIPTIONS;
 #define umb_pin_type(t)		umb_val2descr(umb_pintype, (t))
 #define umb_istate(s)		umb_val2descr(umb_istate, (s))
 
-Static int	 umb_match(device_t, cfdata_t, void *);
-Static void	 umb_attach(device_t, device_t, void *);
-Static int	 umb_detach(device_t, int);
-Static int	 umb_activate(device_t, enum devact);
-Static void	 umb_ncm_setup(struct umb_softc *);
-Static int	 umb_alloc_xfers(struct umb_softc *);
-Static void	 umb_free_xfers(struct umb_softc *);
-Static int	 umb_alloc_bulkpipes(struct umb_softc *);
-Static void	 umb_close_bulkpipes(struct umb_softc *);
-Static int	 umb_ioctl(struct ifnet *, u_long, void *);
-Static int	 umb_output(struct ifnet *, struct mbuf *,
+static int	 umb_match(device_t, cfdata_t, void *);
+static void	 umb_attach(device_t, device_t, void *);
+static int	 umb_detach(device_t, int);
+static int	 umb_activate(device_t, enum devact);
+static void	 umb_ncm_setup(struct umb_softc *);
+static int	 umb_alloc_xfers(struct umb_softc *);
+static void	 umb_free_xfers(struct umb_softc *);
+static int	 umb_alloc_bulkpipes(struct umb_softc *);
+static void	 umb_close_bulkpipes(struct umb_softc *);
+static int	 umb_ioctl(struct ifnet *, u_long, void *);
+static int	 umb_output(struct ifnet *, struct mbuf *,
 		    const struct sockaddr *, const struct rtentry *);
-Static void	 umb_input(struct ifnet *, struct mbuf *);
-Static void	 umb_start(struct ifnet *);
-Static void	 umb_watchdog(struct ifnet *);
-Static void	 umb_statechg_timeout(void *);
+static void	 umb_input(struct ifnet *, struct mbuf *);
+static void	 umb_start(struct ifnet *);
+static void	 umb_watchdog(struct ifnet *);
+static void	 umb_statechg_timeout(void *);
 
-Static int	 umb_mediachange(struct ifnet *);
-Static void	 umb_mediastatus(struct ifnet *, struct ifmediareq *);
+static int	 umb_mediachange(struct ifnet *);
+static void	 umb_mediastatus(struct ifnet *, struct ifmediareq *);
 
-Static void	 umb_newstate(struct umb_softc *, enum umb_state, int);
-Static void	 umb_state_task(void *);
-Static void	 umb_up(struct umb_softc *);
-Static void	 umb_down(struct umb_softc *, int);
+static void	 umb_newstate(struct umb_softc *, enum umb_state, int);
+static void	 umb_state_task(void *);
+static void	 umb_up(struct umb_softc *);
+static void	 umb_down(struct umb_softc *, int);
 
-Static void	 umb_get_response_task(void *);
+static void	 umb_get_response_task(void *);
 
-Static void	 umb_decode_response(struct umb_softc *, void *, int);
-Static void	 umb_handle_indicate_status_msg(struct umb_softc *, void *,
+static void	 umb_decode_response(struct umb_softc *, void *, int);
+static void	 umb_handle_indicate_status_msg(struct umb_softc *, void *,
 		    int);
-Static void	 umb_handle_opendone_msg(struct umb_softc *, void *, int);
-Static void	 umb_handle_closedone_msg(struct umb_softc *, void *, int);
-Static int	 umb_decode_register_state(struct umb_softc *, void *, int);
-Static int	 umb_decode_devices_caps(struct umb_softc *, void *, int);
-Static int	 umb_decode_subscriber_status(struct umb_softc *, void *, int);
-Static int	 umb_decode_radio_state(struct umb_softc *, void *, int);
-Static int	 umb_decode_pin(struct umb_softc *, void *, int);
-Static int	 umb_decode_packet_service(struct umb_softc *, void *, int);
-Static int	 umb_decode_signal_state(struct umb_softc *, void *, int);
-Static int	 umb_decode_connect_info(struct umb_softc *, void *, int);
-Static int	 umb_decode_ip_configuration(struct umb_softc *, void *, int);
-Static void	 umb_rx(struct umb_softc *);
-Static void	 umb_rxeof(struct usbd_xfer *, void *, usbd_status);
-Static int	 umb_encap(struct umb_softc *, struct mbuf *);
-Static void	 umb_txeof(struct usbd_xfer *, void *, usbd_status);
-Static void	 umb_decap(struct umb_softc *, struct usbd_xfer *);
+static void	 umb_handle_opendone_msg(struct umb_softc *, void *, int);
+static void	 umb_handle_closedone_msg(struct umb_softc *, void *, int);
+static int	 umb_decode_register_state(struct umb_softc *, void *, int);
+static int	 umb_decode_devices_caps(struct umb_softc *, void *, int);
+static int	 umb_decode_subscriber_status(struct umb_softc *, void *, int);
+static int	 umb_decode_radio_state(struct umb_softc *, void *, int);
+static int	 umb_decode_pin(struct umb_softc *, void *, int);
+static int	 umb_decode_packet_service(struct umb_softc *, void *, int);
+static int	 umb_decode_signal_state(struct umb_softc *, void *, int);
+static int	 umb_decode_connect_info(struct umb_softc *, void *, int);
+static int	 umb_decode_ip_configuration(struct umb_softc *, void *, int);
+static void	 umb_rx(struct umb_softc *);
+static void	 umb_rxeof(struct usbd_xfer *, void *, usbd_status);
+static int	 umb_encap(struct umb_softc *, struct mbuf *);
+static void	 umb_txeof(struct usbd_xfer *, void *, usbd_status);
+static void	 umb_decap(struct umb_softc *, struct usbd_xfer *);
 
-Static usbd_status	 umb_send_encap_command(struct umb_softc *, void *, int);
-Static int	 umb_get_encap_response(struct umb_softc *, void *, int *);
-Static void	 umb_ctrl_msg(struct umb_softc *, uint32_t, void *, int);
+static usbd_status	 umb_send_encap_command(struct umb_softc *, void *, int);
+static int	 umb_get_encap_response(struct umb_softc *, void *, int *);
+static void	 umb_ctrl_msg(struct umb_softc *, uint32_t, void *, int);
 
-Static void	 umb_open(struct umb_softc *);
-Static void	 umb_close(struct umb_softc *);
+static void	 umb_open(struct umb_softc *);
+static void	 umb_close(struct umb_softc *);
 
-Static int	 umb_setpin(struct umb_softc *, int, int, void *, int, void *,
+static int	 umb_setpin(struct umb_softc *, int, int, void *, int, void *,
 		    int);
-Static void	 umb_setdataclass(struct umb_softc *);
-Static void	 umb_radio(struct umb_softc *, int);
-Static void	 umb_allocate_cid(struct umb_softc *);
-Static void	 umb_send_fcc_auth(struct umb_softc *);
-Static void	 umb_packet_service(struct umb_softc *, int);
-Static void	 umb_connect(struct umb_softc *);
-Static void	 umb_disconnect(struct umb_softc *);
-Static void	 umb_send_connect(struct umb_softc *, int);
+static void	 umb_setdataclass(struct umb_softc *);
+static void	 umb_radio(struct umb_softc *, int);
+static void	 umb_allocate_cid(struct umb_softc *);
+static void	 umb_send_fcc_auth(struct umb_softc *);
+static void	 umb_packet_service(struct umb_softc *, int);
+static void	 umb_connect(struct umb_softc *);
+static void	 umb_disconnect(struct umb_softc *);
+static void	 umb_send_connect(struct umb_softc *, int);
 
-Static void	 umb_qry_ipconfig(struct umb_softc *);
-Static void	 umb_cmd(struct umb_softc *, int, int, const void *, int);
-Static void	 umb_cmd1(struct umb_softc *, int, int, const void *, int, uint8_t *);
-Static void	 umb_command_done(struct umb_softc *, void *, int);
-Static void	 umb_decode_cid(struct umb_softc *, uint32_t, void *, int);
-Static void	 umb_decode_qmi(struct umb_softc *, uint8_t *, int);
+static void	 umb_qry_ipconfig(struct umb_softc *);
+static void	 umb_cmd(struct umb_softc *, int, int, const void *, int);
+static void	 umb_cmd1(struct umb_softc *, int, int, const void *, int, uint8_t *);
+static void	 umb_command_done(struct umb_softc *, void *, int);
+static void	 umb_decode_cid(struct umb_softc *, uint32_t, void *, int);
+static void	 umb_decode_qmi(struct umb_softc *, uint8_t *, int);
 
-Static void	 umb_intr(struct usbd_xfer *, void *, usbd_status);
+static void	 umb_intr(struct usbd_xfer *, void *, usbd_status);
 
-Static char	*umb_ntop(struct sockaddr *);
+static char	*umb_ntop(struct sockaddr *);
 
-Static const char *
+static const char *
 inet_ntop(int af, const void *src, char *dst, socklen_t size);
 static const char *inet_ntop4(const u_char *src, char *dst, size_t size);
 #ifdef INET6
 static const char *inet_ntop6(const u_char *src, char *dst, size_t size);
 #endif /* INET6 */
 
-Static int	 umb_xfer_tout = USBD_DEFAULT_TIMEOUT;
+static int	 umb_xfer_tout = USBD_DEFAULT_TIMEOUT;
 
-Static uint8_t	 umb_uuid_basic_connect[] = MBIM_UUID_BASIC_CONNECT;
-Static uint8_t	 umb_uuid_context_internet[] = MBIM_UUID_CONTEXT_INTERNET;
-Static uint8_t	 umb_uuid_qmi_mbim[] = MBIM_UUID_QMI_MBIM;
-Static uint32_t	 umb_session_id = 0;
+static uint8_t	 umb_uuid_basic_connect[] = MBIM_UUID_BASIC_CONNECT;
+static uint8_t	 umb_uuid_context_internet[] = MBIM_UUID_CONTEXT_INTERNET;
+static uint8_t	 umb_uuid_qmi_mbim[] = MBIM_UUID_QMI_MBIM;
+static uint32_t	 umb_session_id = 0;
 
 CFATTACH_DECL_NEW(umb, sizeof(struct umb_softc), umb_match, umb_attach,
     umb_detach, umb_activate);
@@ -232,7 +232,7 @@ const struct usb_devno umb_fccauth_devs[] = {
 	{ USB_VENDOR_SIERRA, USB_PRODUCT_SIERRA_EM7455 },
 };
 
-Static const uint8_t umb_qmi_alloc_cid[] = {
+static const uint8_t umb_qmi_alloc_cid[] = {
 	0x01,
 	0x0f, 0x00,		/* len */
 	0x00,			/* QMUX flags */
@@ -245,7 +245,7 @@ Static const uint8_t umb_qmi_alloc_cid[] = {
 	0x01, 0x01, 0x00, 0x02	/* TLV */
 };
 
-Static const uint8_t umb_qmi_fcc_auth[] = {
+static const uint8_t umb_qmi_fcc_auth[] = {
 	0x01,
 	0x0c, 0x00,		/* len */
 	0x00,			/* QMUX flags */
@@ -258,7 +258,7 @@ Static const uint8_t umb_qmi_fcc_auth[] = {
 	0x00, 0x00		/* TLV len */
 };
 
-Static int
+static int
 umb_match(device_t parent, cfdata_t match, void *aux)
 {
 	struct usbif_attach_arg *uiaa = aux;
@@ -289,7 +289,7 @@ umb_match(device_t parent, cfdata_t match, void *aux)
 	return UMATCH_NONE;
 }
 
-Static void
+static void
 umb_attach(device_t parent, device_t self, void *aux)
 {
 	struct umb_softc *sc = device_private(self);
@@ -574,7 +574,7 @@ fail:
 	return;
 }
 
-Static int
+static int
 umb_detach(device_t self, int flags)
 {
 	struct umb_softc *sc = (struct umb_softc *)self;
@@ -622,7 +622,7 @@ umb_detach(device_t self, int flags)
 	return 0;
 }
 
-Static int
+static int
 umb_activate(device_t self, enum devact act)
 {
 	struct umb_softc *sc = device_private(self);
@@ -637,7 +637,7 @@ umb_activate(device_t self, enum devact act)
 	}
 }
 
-Static void
+static void
 umb_ncm_setup(struct umb_softc *sc)
 {
 	usb_device_request_t req;
@@ -657,7 +657,7 @@ umb_ncm_setup(struct umb_softc *sc)
 		sc->sc_rx_bufsz = sc->sc_tx_bufsz = 8 * 1024;
 }
 
-Static int
+static int
 umb_alloc_xfers(struct umb_softc *sc)
 {
 	int err = 0;
@@ -681,7 +681,7 @@ umb_alloc_xfers(struct umb_softc *sc)
 	return 0;
 }
 
-Static void
+static void
 umb_free_xfers(struct umb_softc *sc)
 {
 	if (sc->sc_rx_xfer) {
@@ -701,7 +701,7 @@ umb_free_xfers(struct umb_softc *sc)
 	}
 }
 
-Static int
+static int
 umb_alloc_bulkpipes(struct umb_softc *sc)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -731,7 +731,7 @@ umb_alloc_bulkpipes(struct umb_softc *sc)
 	return 1;
 }
 
-Static void
+static void
 umb_close_bulkpipes(struct umb_softc *sc)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -748,7 +748,7 @@ umb_close_bulkpipes(struct umb_softc *sc)
 	}
 }
 
-Static int
+static int
 umb_ioctl(struct ifnet *ifp, u_long cmd, void *data)
 {
 	struct umb_softc *sc = ifp->if_softc;
@@ -855,7 +855,7 @@ umb_ioctl(struct ifnet *ifp, u_long cmd, void *data)
 	return error;
 }
 
-Static int
+static int
 umb_output(struct ifnet *ifp, struct mbuf *m, const struct sockaddr *dst,
     const struct rtentry *rtp)
 {
@@ -880,7 +880,7 @@ umb_output(struct ifnet *ifp, struct mbuf *m, const struct sockaddr *dst,
 	return error;
 }
 
-Static void
+static void
 umb_input(struct ifnet *ifp, struct mbuf *m)
 {
 	size_t pktlen = m->m_len;
@@ -908,7 +908,7 @@ umb_input(struct ifnet *ifp, struct mbuf *m)
 	splx(s);
 }
 
-Static void
+static void
 umb_start(struct ifnet *ifp)
 {
 	struct umb_softc *sc = ifp->if_softc;
@@ -933,7 +933,7 @@ umb_start(struct ifnet *ifp)
 	ifp->if_timer = (2 * umb_xfer_tout) / 1000;
 }
 
-Static void
+static void
 umb_watchdog(struct ifnet *ifp)
 {
 	struct umb_softc *sc = ifp->if_softc;
@@ -947,7 +947,7 @@ umb_watchdog(struct ifnet *ifp)
 	return;
 }
 
-Static void
+static void
 umb_statechg_timeout(void *arg)
 {
 	struct umb_softc *sc = arg;
@@ -963,13 +963,13 @@ umb_statechg_timeout(void *arg)
 	usb_add_task(sc->sc_udev, &sc->sc_umb_task, USB_TASKQ_DRIVER);
 }
 
-Static int
+static int
 umb_mediachange(struct ifnet * ifp)
 {
 	return 0;
 }
 
-Static void
+static void
 umb_mediastatus(struct ifnet * ifp, struct ifmediareq * imr)
 {
 	switch (ifp->if_link_state) {
@@ -985,7 +985,7 @@ umb_mediastatus(struct ifnet * ifp, struct ifmediareq * imr)
 	}
 }
 
-Static void
+static void
 umb_newstate(struct umb_softc *sc, enum umb_state newstate, int flags)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -1003,7 +1003,7 @@ umb_newstate(struct umb_softc *sc, enum umb_state newstate, int flags)
 	usb_add_task(sc->sc_udev, &sc->sc_umb_task, USB_TASKQ_DRIVER);
 }
 
-Static void
+static void
 umb_state_task(void *arg)
 {
 	struct umb_softc *sc = arg;
@@ -1048,7 +1048,7 @@ umb_state_task(void *arg)
 	splx(s);
 }
 
-Static void
+static void
 umb_up(struct umb_softc *sc)
 {
 	switch (sc->sc_state) {
@@ -1109,7 +1109,7 @@ umb_up(struct umb_softc *sc)
 	return;
 }
 
-Static void
+static void
 umb_down(struct umb_softc *sc, int force)
 {
 	umb_close_bulkpipes(sc);
@@ -1154,7 +1154,7 @@ umb_down(struct umb_softc *sc, int force)
 		callout_stop(&sc->sc_statechg_timer);
 }
 
-Static void
+static void
 umb_get_response_task(void *arg)
 {
 	struct umb_softc *sc = arg;
@@ -1177,7 +1177,7 @@ umb_get_response_task(void *arg)
 	splx(s);
 }
 
-Static void
+static void
 umb_decode_response(struct umb_softc *sc, void *response, int len)
 {
 	struct mbim_msghdr *hdr = response;
@@ -1258,7 +1258,7 @@ umb_decode_response(struct umb_softc *sc, void *response, int len)
 	}
 }
 
-Static void
+static void
 umb_handle_indicate_status_msg(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_f2h_indicate_status *m = data;
@@ -1289,7 +1289,7 @@ umb_handle_indicate_status_msg(struct umb_softc *sc, void *data, int len)
 	umb_decode_cid(sc, cid, m->info, infolen);
 }
 
-Static void
+static void
 umb_handle_opendone_msg(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_f2h_openclosedone *resp = data;
@@ -1312,7 +1312,7 @@ umb_handle_opendone_msg(struct umb_softc *sc, void *data, int len)
 	return;
 }
 
-Static void
+static void
 umb_handle_closedone_msg(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_f2h_openclosedone *resp = data;
@@ -1385,7 +1385,7 @@ umb_in_len2mask(struct in_addr *mask, int len)
 		p[i] = (0xff00 >> (len % 8)) & 0xff;
 }
 
-Static int
+static int
 umb_decode_register_state(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_registration_state_info *rs = data;
@@ -1421,7 +1421,7 @@ umb_decode_register_state(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_devices_caps(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_device_caps *dc = data;
@@ -1441,7 +1441,7 @@ umb_decode_devices_caps(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_subscriber_status(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_subscriber_ready_info *si = data;
@@ -1474,7 +1474,7 @@ umb_decode_subscriber_status(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_radio_state(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_radio_state_info *rs = data;
@@ -1505,7 +1505,7 @@ umb_decode_radio_state(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_pin(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_pin_info *pi = data;
@@ -1553,7 +1553,7 @@ umb_decode_pin(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_packet_service(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_packet_service_info *psi = data;
@@ -1616,7 +1616,7 @@ umb_decode_packet_service(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_signal_state(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_signal_state *ss = data;
@@ -1641,7 +1641,7 @@ umb_decode_signal_state(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_connect_info(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_connect_info *ci = data;
@@ -1686,7 +1686,7 @@ umb_decode_connect_info(struct umb_softc *sc, void *data, int len)
 	return 1;
 }
 
-Static int
+static int
 umb_decode_ip_configuration(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_cid_ip_configuration_info *ic = data;
@@ -1798,7 +1798,7 @@ done:
 	return 1;
 }
 
-Static void
+static void
 umb_rx(struct umb_softc *sc)
 {
 	usbd_setup_xfer(sc->sc_rx_xfer, sc, sc->sc_rx_buf,
@@ -1807,7 +1807,7 @@ umb_rx(struct umb_softc *sc)
 	usbd_transfer(sc->sc_rx_xfer);
 }
 
-Static void
+static void
 umb_rxeof(struct usbd_xfer *xfer, void *priv, usbd_status status)
 {
 	struct umb_softc *sc = priv;
@@ -1836,7 +1836,7 @@ umb_rxeof(struct usbd_xfer *xfer, void *priv, usbd_status status)
 	return;
 }
 
-Static int
+static int
 umb_encap(struct umb_softc *sc, struct mbuf *m)
 {
 	struct ncm_header16 *hdr;
@@ -1881,7 +1881,7 @@ umb_encap(struct umb_softc *sc, struct mbuf *m)
 	return 1;
 }
 
-Static void
+static void
 umb_txeof(struct usbd_xfer *xfer, void *priv, usbd_status status)
 {
 	struct umb_softc *sc = priv;
@@ -1910,7 +1910,7 @@ umb_txeof(struct usbd_xfer *xfer, void *priv, usbd_status status)
 	splx(s);
 }
 
-Static void
+static void
 umb_decap(struct umb_softc *sc, struct usbd_xfer *xfer)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -2053,7 +2053,7 @@ fail:
 	splx(s);
 }
 
-Static usbd_status
+static usbd_status
 umb_send_encap_command(struct umb_softc *sc, void *data, int len)
 {
 	struct usbd_xfer *xfer;
@@ -2078,7 +2078,7 @@ umb_send_encap_command(struct umb_softc *sc, void *data, int len)
 	return usbd_request_async(sc->sc_udev, xfer, &req, NULL, NULL);
 }
 
-Static int
+static int
 umb_get_encap_response(struct umb_softc *sc, void *buf, int *len)
 {
 	usb_device_request_t req;
@@ -2100,7 +2100,7 @@ umb_get_encap_response(struct umb_softc *sc, void *buf, int *len)
 	return 0;
 }
 
-Static void
+static void
 umb_ctrl_msg(struct umb_softc *sc, uint32_t req, void *data, int len)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -2158,7 +2158,7 @@ umb_ctrl_msg(struct umb_softc *sc, uint32_t req, void *data, int len)
 	return;
 }
 
-Static void
+static void
 umb_open(struct umb_softc *sc)
 {
 	struct mbim_h2f_openmsg msg;
@@ -2169,7 +2169,7 @@ umb_open(struct umb_softc *sc)
 	return;
 }
 
-Static void
+static void
 umb_close(struct umb_softc *sc)
 {
 	struct mbim_h2f_closemsg msg;
@@ -2178,7 +2178,7 @@ umb_close(struct umb_softc *sc)
 	umb_ctrl_msg(sc, MBIM_CLOSE_MSG, &msg, sizeof(msg));
 }
 
-Static int
+static int
 umb_setpin(struct umb_softc *sc, int op, int is_puk, void *pin, int pinlen,
     void *newpin, int newpinlen)
 {
@@ -2217,7 +2217,7 @@ umb_setpin(struct umb_softc *sc, int op, int is_puk, void *pin, int pinlen,
 	return 0;
 }
 
-Static void
+static void
 umb_setdataclass(struct umb_softc *sc)
 {
 	struct mbim_cid_registration_state rs;
@@ -2235,7 +2235,7 @@ umb_setdataclass(struct umb_softc *sc)
 	umb_cmd(sc, MBIM_CID_REGISTER_STATE, MBIM_CMDOP_SET, &rs, sizeof(rs));
 }
 
-Static void
+static void
 umb_radio(struct umb_softc *sc, int on)
 {
 	struct mbim_cid_radio_state s;
@@ -2246,14 +2246,14 @@ umb_radio(struct umb_softc *sc, int on)
 	umb_cmd(sc, MBIM_CID_RADIO_STATE, MBIM_CMDOP_SET, &s, sizeof(s));
 }
 
-Static void
+static void
 umb_allocate_cid(struct umb_softc *sc)
 {
 	umb_cmd1(sc, MBIM_CID_DEVICE_CAPS, MBIM_CMDOP_SET,
 	    umb_qmi_alloc_cid, sizeof(umb_qmi_alloc_cid), umb_uuid_qmi_mbim);
 }
 
-Static void
+static void
 umb_send_fcc_auth(struct umb_softc *sc)
 {
 	uint8_t	 fccauth[sizeof(umb_qmi_fcc_auth)];
@@ -2269,7 +2269,7 @@ umb_send_fcc_auth(struct umb_softc *sc)
 	    fccauth, sizeof(fccauth), umb_uuid_qmi_mbim);
 }
 
-Static void
+static void
 umb_packet_service(struct umb_softc *sc, int attach)
 {
 	struct mbim_cid_packet_service	s;
@@ -2282,7 +2282,7 @@ umb_packet_service(struct umb_softc *sc, int attach)
 	umb_cmd(sc, MBIM_CID_PACKET_SERVICE, MBIM_CMDOP_SET, &s, sizeof(s));
 }
 
-Static void
+static void
 umb_connect(struct umb_softc *sc)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -2297,7 +2297,7 @@ umb_connect(struct umb_softc *sc)
 	umb_send_connect(sc, MBIM_CONNECT_ACTIVATE);
 }
 
-Static void
+static void
 umb_disconnect(struct umb_softc *sc)
 {
 	struct ifnet *ifp = GET_IFP(sc);
@@ -2307,7 +2307,7 @@ umb_disconnect(struct umb_softc *sc)
 	umb_send_connect(sc, MBIM_CONNECT_DEACTIVATE);
 }
 
-Static void
+static void
 umb_send_connect(struct umb_softc *sc, int command)
 {
 	struct mbim_cid_connect *c;
@@ -2337,7 +2337,7 @@ done:
 	return;
 }
 
-Static void
+static void
 umb_qry_ipconfig(struct umb_softc *sc)
 {
 	struct mbim_cid_ip_configuration_info ipc;
@@ -2348,13 +2348,13 @@ umb_qry_ipconfig(struct umb_softc *sc)
 	    &ipc, sizeof(ipc));
 }
 
-Static void
+static void
 umb_cmd(struct umb_softc *sc, int cid, int op, const void *data, int len)
 {
 	umb_cmd1(sc, cid, op, data, len, umb_uuid_basic_connect);
 }
 
-Static void
+static void
 umb_cmd1(struct umb_softc *sc, int cid, int op, const void *data, int len,
     uint8_t *uuid)
 {
@@ -2382,7 +2382,7 @@ umb_cmd1(struct umb_softc *sc, int cid, int op, const void *data, int len,
 	umb_ctrl_msg(sc, MBIM_COMMAND_MSG, cmd, totlen);
 }
 
-Static void
+static void
 umb_command_done(struct umb_softc *sc, void *data, int len)
 {
 	struct mbim_f2h_cmddone *cmd = data;
@@ -2445,7 +2445,7 @@ umb_command_done(struct umb_softc *sc, void *data, int len)
 	}
 }
 
-Static void
+static void
 umb_decode_cid(struct umb_softc *sc, uint32_t cid, void *data, int len)
 {
 	int	 ok = 1;
@@ -2493,7 +2493,7 @@ umb_decode_cid(struct umb_softc *sc, uint32_t cid, void *data, int len)
 	return;
 }
 
-Static void
+static void
 umb_decode_qmi(struct umb_softc *sc, uint8_t *data, int len)
 {
 	uint8_t	srv;
@@ -2609,7 +2609,7 @@ tooshort:
 	return;
 }
 
-Static void
+static void
 umb_intr(struct usbd_xfer *xfer, void *priv, usbd_status status)
 {
 	struct umb_softc *sc = priv;
@@ -2660,7 +2660,7 @@ umb_intr(struct usbd_xfer *xfer, void *priv, usbd_status status)
 /*
  * Diagnostic routines
  */
-Static char *
+static char *
 umb_ntop(struct sockaddr *sa)
 {
 #define NUMBUFS		4
@@ -2686,7 +2686,7 @@ umb_ntop(struct sockaddr *sa)
 }
 
 #ifdef UMB_DEBUG
-Static char *
+static char *
 umb_uuid2str(uint8_t uuid[MBIM_UUID_LEN])
 {
 	static char uuidstr[2 * MBIM_UUID_LEN + 5];
@@ -2705,7 +2705,7 @@ umb_uuid2str(uint8_t uuid[MBIM_UUID_LEN])
 	return uuidstr;
 }
 
-Static void
+static void
 umb_dump(void *buf, int len)
 {
 	int	 i = 0;
@@ -2735,7 +2735,7 @@ umb_dump(void *buf, int len)
  * author:
  *	Paul Vixie, 1996.
  */
-Static const char *
+static const char *
 inet_ntop(int af, const void *src, char *dst, socklen_t size)
 {
 	switch (af) {
