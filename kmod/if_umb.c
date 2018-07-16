@@ -33,16 +33,11 @@
 
 #include <sys/param.h>
 #include <sys/endian.h>
-#include <sys/kauth.h>
 #include <sys/kernel.h>
-#include <sys/kmem.h>
 #include <sys/mbuf.h>
 #include <sys/socket.h>
 #include <sys/systm.h>
 #include <sys/syslog.h>
-
-#include <sys/device.h>
-#include <sys/rndsource.h>
 
 #include <net/if.h>
 #include <net/if_types.h>
