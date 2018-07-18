@@ -350,7 +350,6 @@ struct umb_softc {
 	struct ifnet		 sc_if;
 #define GET_IFP(sc)	(&(sc)->sc_if)
 	struct ifmedia		 sc_im;
-	krndsource_t		 sc_rnd_source;
 	struct usbd_device	*sc_udev;
 
 	int			 sc_ver_maj;

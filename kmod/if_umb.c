@@ -547,8 +547,6 @@ umb_attach(device_t parent, device_t self, void *aux)
 	if_alloc_sadl(ifp);
 
 	bpf_attach(ifp, DLT_RAW, 0);
-	rnd_attach_source(&sc->sc_rnd_source, device_xname(sc->sc_dev),
-	    RND_TYPE_NET, RND_FLAG_DEFAULT);
 
 	/*
 	 * Open the device now so that we are able to query device information.
@@ -609,7 +607,6 @@ umb_detach(device_t self, int flags)
 		ifmedia_delete_instance(&sc->sc_im, IFM_INST_ANY);
 	}
 	if (sc->sc_attached) {
-		rnd_detach_source(&sc->sc_rnd_source);
 		bpf_detach(ifp);
 		if_detach(ifp);
 	}
