@@ -48,7 +48,6 @@
 
 #ifdef INET
 #include <netinet/in.h>
-#include <netinet/if_inarp.h>
 #include <netinet/in_var.h>
 #include <netinet/ip.h>
 #endif
