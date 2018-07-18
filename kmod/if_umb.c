@@ -45,6 +45,7 @@
 
 #include <net/if.h>
 #include <net/if_types.h>
+#include <net/if_var.h>
 
 #ifdef INET
 #include <netinet/in.h>
