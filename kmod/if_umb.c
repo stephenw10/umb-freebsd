@@ -203,13 +203,6 @@ static void	 umb_intr(struct usbd_xfer *, void *, usbd_status);
 
 static char	*umb_ntop(struct sockaddr *);
 
-static const char *
-inet_ntop(int af, const void *src, char *dst, socklen_t size);
-static const char *inet_ntop4(const u_char *src, char *dst, size_t size);
-#ifdef INET6
-static const char *inet_ntop6(const u_char *src, char *dst, size_t size);
-#endif /* INET6 */
-
 static int	 umb_xfer_tout = USBD_DEFAULT_TIMEOUT;
 
 static uint8_t	 umb_uuid_basic_connect[] = MBIM_UUID_BASIC_CONNECT;
