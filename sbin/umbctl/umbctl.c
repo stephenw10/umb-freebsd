@@ -175,8 +175,11 @@ static int _umbctl(char const * ifname, int verbose, int argc, char * argv[])
 static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 		int argc, char * argv[])
 {
-	FILE * fp;
+	int fd;
+	struct ifreq ifr;
+	struct umb_info umbi;
 	struct umb_parameter umbp;
+	FILE * fp;
 	char buf[512];
 	int eof;
 	char * tokens[3];
@@ -202,8 +205,30 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 	eof = feof(fp);
 	if(fclose(fp) != 0 || !eof)
 		return _error(2, "%s: %s", filename, strerror(errno));
-	/* FIXME really apply the parameters */
-	_umbctl(ifname, verbose, argc, argv);
+	if((fd = _umbctl_socket()) < 0)
+		return 2;
+	memset(&ifr, 0, sizeof(ifr));
+	strlcpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+	ifr.ifr_data = &umbp;
+	if(_umbctl_ioctl(ifname, fd, SIOCGUMBPARAM, &ifr) != 0
+			|| _umbctl_set(ifname, &umbp, argc, argv) != 0
+			|| _umbctl_ioctl(ifname, fd, SIOCSUMBPARAM, &ifr) != 0)
+	{
+		close(fd);
+		return 2;
+	}
+	if(verbose > 0)
+	{
+		ifr.ifr_data = &umbi;
+		if(_umbctl_ioctl(ifname, fd, SIOCGUMBINFO, &ifr) != 0)
+		{
+			close(fd);
+			return 3;
+		}
+		_umbctl_info(ifname, &umbi);
+	}
+	if(close(fd) != 0)
+		return _error(2, "%s: %s", ifname, strerror(errno));
 	return 0;
 }
 
