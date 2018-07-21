@@ -1,3 +1,4 @@
+/* $FreeBSD$ */
 /* $NetBSD$ */
 /*
  * Copyright (c) 2018 Pierre Pronchery <khorben@defora.org>
