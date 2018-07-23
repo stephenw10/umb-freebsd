@@ -741,7 +741,7 @@ umb_ioctl(struct ifnet *ifp, u_long cmd, void *data)
 	struct umb_softc *sc = ifp->if_softc;
 	struct ifaddr *ifa = (struct ifaddr *)data;
 	struct ifreq *ifr = (struct ifreq *)data;
-	int	 s, error = 0;
+	int s, error = 0;
 	struct umb_parameter mp;
 
 	if (sc->sc_dying)
@@ -996,7 +996,6 @@ umb_state_task(void *arg)
 	struct umb_softc *sc = arg;
 	struct ifnet *ifp = GET_IFP(sc);
 	struct ifreq ifr;
-	struct in_aliasreq ifra;
 	int	 s;
 	int	 state;
 
@@ -1021,13 +1020,10 @@ umb_state_task(void *arg)
 			 */
 			memset(sc->sc_info.ipv4dns, 0,
 			    sizeof(sc->sc_info.ipv4dns));
-			if (ifioctl_common(ifp, SIOCGIFADDR, &ifr) == 0 &&
+			if (in_control(NULL, SIOCGIFADDR, &ifr, ifp) == 0 &&
 			    satosin(&ifr.ifr_addr)->sin_addr.s_addr !=
 			    INADDR_ANY) {
-				memset(&ifra, 0, sizeof(ifra));
-				memcpy(&ifra.ifra_addr, &ifr.ifr_addr,
-				    sizeof(ifra.ifra_addr));
-				ifioctl_common(ifp, SIOCDIFADDR, &ifra);
+				in_control(NULL, SIOCDIFADDR, &ifr, ifp);
 			}
 		}
 		if_link_state_change(ifp, state);
@@ -1692,7 +1688,7 @@ umb_decode_ip_configuration(struct umb_softc *sc, void *data, int len)
 	if (len < sizeof(*ic))
 		return 0;
 	if (le32toh(ic->sessionid) != umb_session_id) {
-		DPRINTF("%s: ignore IP configration for session id %d\n",
+		DPRINTF("%s: ignore IP configuration for session id %d\n",
 		    DEVNAM(sc), le32toh(ic->sessionid));
 		return 0;
 	}
@@ -1732,7 +1728,7 @@ umb_decode_ip_configuration(struct umb_softc *sc, void *data, int len)
 		sin->sin_len = sizeof(ifra.ifra_mask);
 		umb_in_len2mask(&sin->sin_addr, ipv4elem.prefixlen);
 
-		rv = umb_ioctl(ifp, SIOCAIFADDR, &ifra);
+		rv = in_control(NULL, SIOCAIFADDR, &ifra, ifp);
 		if (rv == 0) {
 			if (ifp->if_flags & IFF_DEBUG)
 				log(LOG_INFO, "%s: IPv4 addr %s, mask %s, "
@@ -1774,7 +1770,7 @@ umb_decode_ip_configuration(struct umb_softc *sc, void *data, int len)
 
 	avail = le32toh(ic->ipv6_available);
 	if ((ifp->if_flags & IFF_DEBUG) && avail & MBIM_IPCONF_HAS_ADDRINFO) {
-		/* XXX FIXME: IPv6 configuation missing */
+		/* XXX FIXME: IPv6 configuration missing */
 		log(LOG_INFO, "%s: ignoring IPv6 configuration\n", DEVNAM(sc));
 	}
 	if (state != -1)
