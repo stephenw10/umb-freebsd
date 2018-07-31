@@ -45,7 +45,6 @@
 #include <dev/usb/if_umbreg.h>
 
 
-
 /* constants */
 static const struct umb_valdescr _umb_regstate[] =
 	MBIM_REGSTATE_DESCRIPTIONS;
@@ -95,6 +94,7 @@ static void _utf16_to_char(uint16_t *in, int inlen, char *out, size_t outlen);
 
 
 /* functions */
+/* char_to_utf16 */
 /* this function is from OpenBSD's ifconfig(8) */
 static int _char_to_utf16(const char * in, uint16_t * out, size_t outlen)
 {
@@ -122,6 +122,7 @@ static int _char_to_utf16(const char * in, uint16_t * out, size_t outlen)
 }
 
 
+/* error */
 static int _error(int ret, char const * format, ...)
 {
 	va_list ap;
@@ -135,6 +136,7 @@ static int _error(int ret, char const * format, ...)
 }
 
 
+/* umbctl */
 static int _umbctl(char const * ifname, int verbose, int argc, char * argv[])
 {
 	int fd;
@@ -175,6 +177,7 @@ static int _umbctl(char const * ifname, int verbose, int argc, char * argv[])
 }
 
 
+/* umbctl_file */
 static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 		int argc, char * argv[])
 {
@@ -185,10 +188,8 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 	FILE * fp;
 	char buf[512];
 	int eof;
-	char * tokens[3];
+	char * tokens[3] = { buf, NULL, NULL };
 	char * p;
-	char * last;
-	size_t i;
 
 	if((fp = fopen(filename, "r")) == NULL)
 		return _error(2, "%s: %s", filename, strerror(errno));
@@ -198,11 +199,13 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 		if(buf[0] == '#')
 			continue;
 		buf[sizeof(buf) - 1] = '\0';
-		for(i = 0, p = strtok_r(buf, " ", &last); i < 3 && p != NULL;
-				i++, p = strtok_r(NULL, " ", &last))
-			tokens[i] = p;
-		tokens[i] = NULL;
-		if(_umbctl_set(ifname, &umbp, i, tokens) != 0)
+		if((p = strstr(buf, "=")) != NULL)
+		{
+			tokens[1] = p + 1;
+			*p = '\0';
+		} else
+			tokens[1] = NULL;
+		if(_umbctl_set(ifname, &umbp, (p != NULL) ? 2 : 1, tokens) != 0)
 			break;
 	}
 	eof = feof(fp);
@@ -236,6 +239,7 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 }
 
 
+/* umbctl_info */
 static void _umbctl_info(char const * ifname, struct umb_info * umbi)
 {
 	char provider[UMB_PROVIDERNAME_MAXLEN + 1];
@@ -269,6 +273,7 @@ static void _umbctl_info(char const * ifname, struct umb_info * umbi)
 }
 
 
+/* umbctl_ioctl */
 static int _umbctl_ioctl(char const * ifname, int fd, unsigned long request,
 		struct ifreq * ifr)
 {
@@ -278,75 +283,138 @@ static int _umbctl_ioctl(char const * ifname, int fd, unsigned long request,
 }
 
 
+/* umbctl_set */
+/* callbacks */
+static int _set_apn(char const *, struct umb_parameter *, char const *);
+static int _set_username(char const *, struct umb_parameter *, char const *);
+static int _set_password(char const *, struct umb_parameter *, char const *);
+static int _set_pin(char const *, struct umb_parameter *, char const *);
+static int _set_puk(char const *, struct umb_parameter *, char const *);
+static int _set_roaming_allow(char const *, struct umb_parameter *,
+		char const *);
+static int _set_roaming_deny(char const *, struct umb_parameter *,
+		char const *);
+
 static int _umbctl_set(char const * ifname, struct umb_parameter * umbp,
 		int argc, char * argv[])
 {
+	struct
+	{
+		char const * name;
+		int (*callback)(char const *,
+				struct umb_parameter *, char const *);
+		int parameter;
+	} callbacks[] =
+	{
+		{ "apn", _set_apn, 1 },
+		{ "username", _set_username, 1 },
+		{ "password", _set_password, 1 },
+		{ "pin", _set_pin, 1 },
+		{ "puk", _set_puk, 1 },
+		{ "roaming", _set_roaming_allow, 0 },
+		{ "-roaming", _set_roaming_deny, 0 },
+	};
 	int i;
+	size_t j;
 
 	for(i = 0; i < argc; i++)
 	{
-		if(strcmp(argv[i], "apn") == 0 && i + 1 < argc)
-		{
-			umbp->apnlen = _char_to_utf16(argv[i + 1],
-					umbp->apn, sizeof(umbp->apn));
-			if(umbp->apnlen < 0 || (size_t)umbp->apnlen
-					> sizeof(umbp->apn))
-				return _error(-1, "%s: %s", ifname,
-						"APN too long");
-			i++;
-		}
-		else if(strcmp(argv[i], "username") == 0 && i + 1 < argc)
-		{
-			umbp->usernamelen = _char_to_utf16(argv[i + 1],
-					umbp->username, sizeof(umbp->username));
-			if(umbp->usernamelen < 0 || (size_t)umbp->usernamelen
-					> sizeof(umbp->username))
-				return _error(-1, "%s: %s", ifname,
-						"Username too long");
-			i++;
-		}
-		else if(strcmp(argv[i], "password") == 0 && i + 1 < argc)
-		{
-			umbp->passwordlen = _char_to_utf16(argv[i + 1],
-					umbp->password, sizeof(umbp->password));
-			if(umbp->passwordlen < 0 || (size_t)umbp->passwordlen
-					> sizeof(umbp->password))
-				return _error(-1, "%s: %s", ifname,
-						"Password too long");
-			i++;
-		}
-		else if(strcmp(argv[i], "pin") == 0 && i + 1 < argc)
-		{
-			umbp->is_puk = 0;
-			umbp->op = MBIM_PIN_OP_ENTER;
-			umbp->pinlen = _char_to_utf16(argv[i + 1], umbp->pin,
-					sizeof(umbp->pin));
-			if(umbp->pinlen < 0 || (size_t)umbp->pinlen
-					> sizeof(umbp->pin))
-				return _error(-1, "%s: %s", ifname,
-						"PUK code too long");
-			i++;
-		}
-		else if(strcmp(argv[i], "puk") == 0 && i + 1 < argc)
-		{
-			umbp->is_puk = 1;
-			umbp->op = MBIM_PIN_OP_ENTER;
-			umbp->pinlen = _char_to_utf16(argv[i + 1], umbp->pin,
-					sizeof(umbp->pin));
-			if(umbp->pinlen < 0 || (size_t)umbp->pinlen
-					> sizeof(umbp->pin))
-				return _error(-1, "%s: %s", ifname,
-						"PIN code too long");
-			i++;
-		}
-		else
-			return _error(-1, "%s: Unknown or incomplete parameter",
-					argv[i]);
+		for(j = 0; j < sizeof(callbacks) / sizeof(*callbacks); j++)
+			if(strcmp(argv[i], callbacks[j].name) == 0)
+			{
+				if(callbacks[j].parameter && i + 1 == argc)
+					return _error(-1, "%s: Incomplete"
+							" parameter", argv[i]);
+				if(callbacks[j].callback(ifname, umbp,
+							callbacks[j].parameter
+							? argv[i + 1] : NULL))
+					return -1;
+				if(callbacks[j].parameter)
+					i++;
+				break;
+			}
+		if(j == sizeof(callbacks) / sizeof(*callbacks))
+			return _error(-1, "%s: Unknown parameter", argv[i]);
 	}
 	return 0;
 }
 
+static int _set_apn(char const * ifname, struct umb_parameter * umbp,
+		char const * apn)
+{
+	umbp->apnlen = _char_to_utf16(apn, umbp->apn, sizeof(umbp->apn));
+	if(umbp->apnlen < 0 || (size_t)umbp->apnlen > sizeof(umbp->apn))
+		return _error(-1, "%s: %s", ifname, "APN too long");
+	return 0;
+}
 
+static int _set_username(char const * ifname, struct umb_parameter * umbp,
+		char const * username)
+{
+	umbp->usernamelen = _char_to_utf16(username, umbp->username,
+			sizeof(umbp->username));
+	if(umbp->usernamelen < 0
+			|| (size_t)umbp->usernamelen > sizeof(umbp->username))
+		return _error(-1, "%s: %s", ifname, "Username too long");
+	return 0;
+}
+
+static int _set_password(char const * ifname, struct umb_parameter * umbp,
+		char const * password)
+{
+	umbp->passwordlen = _char_to_utf16(password, umbp->password,
+			sizeof(umbp->password));
+	if(umbp->passwordlen < 0
+			|| (size_t)umbp->passwordlen > sizeof(umbp->password))
+		return _error(-1, "%s: %s", ifname, "Password too long");
+	return 0;
+}
+
+static int _set_pin(char const * ifname, struct umb_parameter * umbp,
+		char const * pin)
+{
+	umbp->is_puk = 0;
+	umbp->op = MBIM_PIN_OP_ENTER;
+	umbp->pinlen = _char_to_utf16(pin, umbp->pin, sizeof(umbp->pin));
+	if(umbp->pinlen < 0 || (size_t)umbp->pinlen
+			> sizeof(umbp->pin))
+		return _error(-1, "%s: %s", ifname, "PIN code too long");
+	return 0;
+}
+
+static int _set_puk(char const * ifname, struct umb_parameter * umbp,
+		char const * puk)
+{
+	umbp->is_puk = 1;
+	umbp->op = MBIM_PIN_OP_ENTER;
+	umbp->pinlen = _char_to_utf16(puk, umbp->pin, sizeof(umbp->pin));
+	if(umbp->pinlen < 0 || (size_t)umbp->pinlen > sizeof(umbp->pin))
+		return _error(-1, "%s: %s", ifname, "PUK code too long");
+	return 0;
+}
+
+static int _set_roaming_allow(char const * ifname, struct umb_parameter * umbp,
+		char const * unused)
+{
+	(void) ifname;
+	(void) unused;
+
+	umbp->roaming = 1;
+	return 0;
+}
+
+static int _set_roaming_deny(char const * ifname, struct umb_parameter * umbp,
+		char const * unused)
+{
+	(void) ifname;
+	(void) unused;
+
+	umbp->roaming = 0;
+	return 0;
+}
+
+
+/* umbctl_socket */
 static int _umbctl_socket(void)
 {
 	int fd;
@@ -357,6 +425,7 @@ static int _umbctl_socket(void)
 }
 
 
+/* usage */
 static int _usage(void)
 {
 	fputs("Usage: umbctl [-v] ifname [parameter[=value]] [...]\n"
@@ -366,6 +435,7 @@ static int _usage(void)
 }
 
 
+/* utf16_to_char */
 static void _utf16_to_char(uint16_t *in, int inlen, char *out, size_t outlen)
 {
 	uint16_t c;
@@ -384,6 +454,7 @@ static void _utf16_to_char(uint16_t *in, int inlen, char *out, size_t outlen)
 }
 
 
+/* main */
 int main(int argc, char * argv[])
 {
 	int o;
