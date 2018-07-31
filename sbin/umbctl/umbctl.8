@@ -30,40 +30,126 @@
 .\"
 .\" last edit-date: [Thu Aug 31 10:47:33 2000]
 .\"
-.Dd May 5, 2018
+.Dd July 24, 2018
 .Dt UMBCTL 8
 .Os
 .Sh NAME
 .Nm umbctl
-.Nd "display or set parameters for a umb (4G/LTE) interface"
+.Nd "display or set parameters for a MBIM interface (4G/LTE)"
 .Sh SYNOPSIS
 .Nm umbctl
-.Op Fl a Ar APN
-.Op Fl u Ar username
-.Op Fl p Ar password
+.Op Fl v
 .Ar ifname
+.Op Ar parameter Ns Op \&= Ns Ar value
+.Op Ar ...
+.Pp
+.Nm umbctl
+.Op Fl v
+.Op Fl f Ar config-file
+.Ar ifname
+.Op Ar parameter Ns Op \&= Ns Ar value
+.Op Ar ...
+.Pp
 .Sh DESCRIPTION
 .Bl -tag -width indent
-.It Fl a
-specifies the APN (Access Point Name) used to communicate with the
-network.
-.It Fl u
-specifies the username used to authenticate with the network.
-.It Fl p
-specifies the password used to authenticate with the network.
+.It Fl v
+enables verbose mode.
+.It Fl f
+parse
+.Ar config-file
+for
+.Ar parameter Ns Op \&= Ns Ar value
+pairs, one per line, as if they had been specified on the command line.
+This allows the password or PIN codes to be not passed as command line
+arguments.
+Comments starting with # to the end of the current line are ignored.
+.El
+.Pp
+The
+.Xr umb 4
+driver may require a number of additional arguments or optional
+parameters besides the settings that can be adjusted with
+.Xr ifconfig 8 .
+These may be credentials or other tunable connectivity variables.
+The
+.Nm
+utility can be used to display the current settings, or adjust these
+parameters as required.
+.Pp
+For whatever intent
+.Nm
+is being called, at least the parameter
+.Ar ifname
+needs to be specified, naming the interface for which the settings
+are to be performed or displayed.
+Use
+.Xr ifconfig 8
+or
+.Xr netstat 1
+to see which interfaces are available.
+.Pp
+If no other parameter is given,
+.Nm
+will just list the current status for
+.Ar ifname
+and exit.
+.Pp
+If any additional parameter is supplied, superuser privileges are
+required, and the command works in
+.Ql set
+mode.
+This is normally done quietly, unless the option
+.Fl v
+is also enabled, which will cause a final printout of the status as
+described above once all other actions have been taken.
+.Pp
+The parameters currently supported include:
+.Bl -tag -width xxxxxxxxxxxxxxxxxxxxxxxxx
+.It Ar apn Ns \&= Ns Em access-point
+Set the APN to
+.Em access-point .
+.It Ar username Ns \&= Ns Em username
+Set the username to
+.Em username .
+.It Ar password Ns \&= Ns Em password
+Set the password to
+.Em password .
+.It Ar pin Ns \&= Ns Em pin-code
+Enter the PIN
+.Em pin-code .
+.It Ar puk Ns \&= Ns Em puk-code
+Enter the PUK
+.Em puk-code .
+.It Ar roaming
+Allow data connections when roaming.
+.It Ar -roaming
+Deny data connections when roaming.
+.El
 .Sh EXAMPLES
 .Bd -literal
 # umbctl umb0
-umb0: PIN ****, roaming 0, classes 0
+umb0: state up, mode automatic, registration home network
+	provider "BSD-Net", dataclass LTE, signal good
+	phone number "+15554242", roaming "" (denied)
+	APN "", TX 50000000, RX 100000000
+	firmware "MBIM_FW_V1.0", hardware "MBIM_HW_V1.0"
 .Ed
 .Pp
 Display the settings for umb0.
 .Ed
 .Bd -literal
-# umbctl -a operator.internet -u mobile -p mobile umb0
+# umbctl umb0 apn operator.internet username mobile password mobile
 .Ed
 .Pp
-Configure the connection parameters for umb0.
+Configure the connection parameters for umb0 from the command line.
+.Ed
+.Bd -literal
+# umbctl -f /dev/stdin umb0 << EOF
+pin=1234
+EOF
+.Ed
+.Pp
+Configure the connection parameters for umb0 from a file.
 .Ed
 .Sh SEE ALSO
 .Xr netstat 1 ,
