@@ -42,8 +42,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <dev/usb/mbim.h>
-#include <dev/usb/if_umbreg.h>
+#include "../../kmod/mbim.h"
+#include "../../kmod/if_umbreg.h"
 
 #include "sockio.h"
 
