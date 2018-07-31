@@ -45,6 +45,8 @@
 #include <dev/usb/mbim.h>
 #include <dev/usb/if_umbreg.h>
 
+#include "sockio.h"
+
 
 /* constants */
 static const struct umb_valdescr _umb_regstate[] =
