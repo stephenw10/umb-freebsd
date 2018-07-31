@@ -152,7 +152,7 @@ static int _umbctl(char const * ifname, int verbose, int argc, char * argv[])
 	if(argc != 0)
 	{
 		memset(&umbp, 0, sizeof(umbp));
-		ifr.ifr_data = &umbp;
+		ifr.ifr_data = (caddr_t)&umbp;
 		if(_umbctl_ioctl(ifname, fd, SIOCGUMBPARAM, &ifr) != 0
 				|| _umbctl_set(ifname, &umbp, argc, argv) != 0
 				|| _umbctl_ioctl(ifname, fd, SIOCSUMBPARAM,
@@ -164,7 +164,7 @@ static int _umbctl(char const * ifname, int verbose, int argc, char * argv[])
 	}
 	if(argc == 0 || verbose > 0)
 	{
-		ifr.ifr_data = &umbi;
+		ifr.ifr_data = (caddr_t)&umbi;
 		if(_umbctl_ioctl(ifname, fd, SIOCGUMBINFO, &ifr) != 0)
 		{
 			close(fd);
@@ -216,7 +216,7 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 		return 2;
 	memset(&ifr, 0, sizeof(ifr));
 	strlcpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
-	ifr.ifr_data = &umbp;
+	ifr.ifr_data = (caddr_t)&umbp;
 	if(_umbctl_ioctl(ifname, fd, SIOCGUMBPARAM, &ifr) != 0
 			|| _umbctl_set(ifname, &umbp, argc, argv) != 0
 			|| _umbctl_ioctl(ifname, fd, SIOCSUMBPARAM, &ifr) != 0)
@@ -226,7 +226,7 @@ static int _umbctl_file(char const * ifname, char const * filename, int verbose,
 	}
 	if(verbose > 0)
 	{
-		ifr.ifr_data = &umbi;
+		ifr.ifr_data = (caddr_t)&umbi;
 		if(_umbctl_ioctl(ifname, fd, SIOCGUMBINFO, &ifr) != 0)
 		{
 			close(fd);
