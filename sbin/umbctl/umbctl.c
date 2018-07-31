@@ -31,13 +31,16 @@
 #include <sys/endian.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <unistd.h>
+
+#include <net/if.h>
+
+#include <ctype.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <net/if.h>
+#include <unistd.h>
+
 #include <dev/usb/mbim.h>
 #include <dev/usb/if_umbreg.h>
 
