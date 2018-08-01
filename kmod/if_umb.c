@@ -209,6 +209,8 @@ static uint8_t	 umb_uuid_context_internet[] = MBIM_UUID_CONTEXT_INTERNET;
 static uint8_t	 umb_uuid_qmi_mbim[] = MBIM_UUID_QMI_MBIM;
 static uint32_t	 umb_session_id = 0;
 
+MALLOC_DEFINE(M_USB_UMB, "USB UMB", "USB MBIM driver");
+
 CFATTACH_DECL_NEW(umb, sizeof(struct umb_softc), umb_match, umb_attach,
     umb_detach, umb_activate);
 
@@ -484,16 +486,8 @@ umb_attach(device_t parent, device_t self, void *aux)
 		aprint_error_dev(self, "failed to open control pipe\n");
 		goto fail;
 	}
-	sc->sc_resp_buf = kmem_alloc(sc->sc_ctrl_len, KM_NOSLEEP);
-	if (sc->sc_resp_buf == NULL) {
-		aprint_error_dev(self, "allocation of resp buffer failed\n");
-		goto fail;
-	}
-	sc->sc_ctrl_msg = kmem_alloc(sc->sc_ctrl_len, KM_NOSLEEP);
-	if (sc->sc_ctrl_msg == NULL) {
-		aprint_error_dev(self, "allocation of ctrl msg buffer failed\n");
-		goto fail;
-	}
+	sc->sc_resp_buf = malloc(sc->sc_ctrl_len, M_USB_UMB, M_WAITOK);
+	sc->sc_ctrl_msg = malloc(sc->sc_ctrl_len, M_USB_UMB, M_WAITOK);
 
 	sc->sc_info.regstate = MBIM_REGSTATE_UNKNOWN;
 	sc->sc_info.pin_attempts_left = UMB_VALUE_UNKNOWN;
@@ -588,11 +582,11 @@ umb_detach(device_t self, int flags)
 		sc->sc_ctrl_pipe = NULL;
 	}
 	if (sc->sc_ctrl_msg) {
-		kmem_free(sc->sc_ctrl_msg, sc->sc_ctrl_len);
+		free(sc->sc_ctrl_msg, M_USB_UMB);
 		sc->sc_ctrl_msg = NULL;
 	}
 	if (sc->sc_resp_buf) {
-		kmem_free(sc->sc_resp_buf, sc->sc_ctrl_len);
+		free(sc->sc_resp_buf, M_USB_UMB);
 		sc->sc_resp_buf = NULL;
 	}
 	if (ifp->if_softc) {
@@ -2296,7 +2290,7 @@ umb_send_connect(struct umb_softc *sc, int command)
 	int	 off;
 
 	/* Too large or the stack */
-	c = kmem_zalloc(sizeof(*c), KM_SLEEP);
+	c = malloc(sizeof(*c), M_USB_UMB, M_WAITOK | M_ZERO);
 	c->sessionid = htole32(umb_session_id);
 	c->command = htole32(command);
 	off = offsetof(struct mbim_cid_connect, data);
@@ -2315,7 +2309,7 @@ umb_send_connect(struct umb_softc *sc, int command)
 	memcpy(c->context, umb_uuid_context_internet, sizeof(c->context));
 	umb_cmd(sc, MBIM_CID_CONNECT, MBIM_CMDOP_SET, c, off);
 done:
-	kmem_free(c, sizeof(*c));
+	free(c, M_USB_UMB);
 	return;
 }
 
