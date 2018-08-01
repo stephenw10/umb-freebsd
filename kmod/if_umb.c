@@ -126,9 +126,9 @@ const struct umb_valdescr umb_istate[] = UMB_INTERNAL_STATE_DESCRIPTIONS;
 #define umb_pin_type(t)		umb_val2descr(umb_pintype, (t))
 #define umb_istate(s)		umb_val2descr(umb_istate, (s))
 
-static int	 umb_match(device_t, cfdata_t, void *);
-static void	 umb_attach(device_t, device_t, void *);
-static int	 umb_detach(device_t, int);
+static device_probe_t umb_probe;
+static device_attach_t umb_attach;
+static device_detach_t umb_detach;
 static int	 umb_activate(device_t, enum devact);
 static void	 umb_ncm_setup(struct umb_softc *);
 static int	 umb_alloc_xfers(struct umb_softc *);
@@ -250,14 +250,14 @@ static const uint8_t umb_qmi_fcc_auth[] = {
 };
 
 static int
-umb_match(device_t parent, cfdata_t match, void *aux)
+umb_probe(device_t dev)
 {
-	struct usbif_attach_arg *uiaa = aux;
+	struct usb_attach_arg *uaa = device_get_ivars(dev);
 	usb_interface_descriptor_t *id;
 
-	if (!uiaa->uiaa_iface)
+	if (!uaa->uaa_iface)
 		return UMATCH_NONE;
-	if ((id = usbd_get_interface_descriptor(uiaa->uiaa_iface)) == NULL)
+	if ((id = usbd_get_interface_descriptor(uaa->uaa_iface)) == NULL)
 		return UMATCH_NONE;
 
 	/*
@@ -267,7 +267,7 @@ umb_match(device_t parent, cfdata_t match, void *aux)
 	if (id->bInterfaceClass == UICLASS_CDC &&
 	    id->bInterfaceSubClass ==
 	    UISUBCLASS_NETWORK_CONTROL_MODEL)
-		id = usbd_find_idesc(uiaa->uiaa_device->ud_cdesc, uiaa->uiaa_iface->ui_index, 1);
+		id = usbd_find_idesc(uaa->uaa_device->ud_cdesc, uaa->uaa_iface->ui_index, 1);
 	if (id == NULL)
 		return UMATCH_NONE;
 
@@ -280,10 +280,10 @@ umb_match(device_t parent, cfdata_t match, void *aux)
 	return UMATCH_NONE;
 }
 
-static void
-umb_attach(device_t parent, device_t self, void *aux)
+static int
+umb_attach(device_t dev)
 {
-	struct umb_softc *sc = device_private(self);
+	struct umb_softc *sc = device_get_softc(dev);
 	struct usbif_attach_arg *uiaa = aux;
 	char *devinfop;
 	usbd_status status;
@@ -556,9 +556,9 @@ fail:
 }
 
 static int
-umb_detach(device_t self, int flags)
+umb_detach(device_t dev)
 {
-	struct umb_softc *sc = (struct umb_softc *)self;
+	struct umb_softc *sc = device_get_softc(dev);
 	struct ifnet *ifp = GET_IFP(sc);
 	int	 s;
 
@@ -603,9 +603,9 @@ umb_detach(device_t self, int flags)
 }
 
 static int
-umb_activate(device_t self, enum devact act)
+umb_activate(device_t dev, enum devact act)
 {
-	struct umb_softc *sc = device_private(self);
+	struct umb_softc *sc = device_get_softc(dev);
 
 	switch (act) {
 	case DVACT_DEACTIVATE:
