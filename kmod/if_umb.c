@@ -202,7 +202,7 @@ static void	 umb_intr(struct usbd_xfer *, void *, usbd_status);
 
 static char	*umb_ntop(struct sockaddr *);
 
-static int	 umb_xfer_tout = USBD_DEFAULT_TIMEOUT;
+static int	 umb_xfer_tout = USB_DEFAULT_TIMEOUT;
 
 static uint8_t	 umb_uuid_basic_connect[] = MBIM_UUID_BASIC_CONNECT;
 static uint8_t	 umb_uuid_context_internet[] = MBIM_UUID_CONTEXT_INTERNET;
