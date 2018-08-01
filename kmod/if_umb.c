@@ -914,7 +914,7 @@ umb_start(struct ifnet *ifp)
 	}
 	IFQ_DEQUEUE(&ifp->if_snd, m_head);
 
-	bpf_mtap(ifp, m_head);
+	bpf_mtap(ifp, m_head, BPF_D_OUT);
 
 	ifp->if_flags |= IFF_OACTIVE;
 	ifp->if_timer = (2 * umb_xfer_tout) / 1000;
