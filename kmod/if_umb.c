@@ -2102,9 +2102,6 @@ umb_ctrl_msg(struct umb_softc *sc, uint32_t req, void *data, int len)
 	usbd_status err;
 	int	 s;
 
-#if 0
-	assertwaitok();
-#endif
 	if (sc->sc_dying)
 		return;
 	if (len < sizeof(*hdr))
