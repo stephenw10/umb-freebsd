@@ -209,10 +209,27 @@ static uint8_t	 umb_uuid_context_internet[] = MBIM_UUID_CONTEXT_INTERNET;
 static uint8_t	 umb_uuid_qmi_mbim[] = MBIM_UUID_QMI_MBIM;
 static uint32_t	 umb_session_id = 0;
 
-MALLOC_DEFINE(M_USB_UMB, "USB UMB", "USB MBIM driver");
+static device_method_t umb_methods[] = {
+	/* USB interface */
+	DEVMETHOD(usb_handle_request, umb_handle_request),
 
-CFATTACH_DECL_NEW(umb, sizeof(struct umb_softc), umb_match, umb_attach,
-    umb_detach, umb_activate);
+	/* Device interface */
+	DEVMETHOD(device_probe, umb_probe),
+	DEVMETHOD(device_attach, umb_attach),
+	DEVMETHOD(device_detach, umb_detach),
+	DEVMETHOD(device_suspend, umb_suspend),
+	DEVMETHOD(device_resume, umb_resume),
+
+	DEVMETHOD_END
+};
+
+static driver_t umb_driver = {
+	.name = "umb",
+	.methods = umb_methods,
+	.size = sizeof(struct umb_softc),
+};
+
+MALLOC_DEFINE(M_USB_UMB, "USB UMB", "USB MBIM driver");
 
 const int umb_delay = 4000;
 
